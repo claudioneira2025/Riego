@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.riego.databinding.ActivityBienvenidaBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlin.random.Random
 
 class BienvenidaActivity : AppCompatActivity() {
@@ -93,6 +95,11 @@ class BienvenidaActivity : AppCompatActivity() {
 
         // Botón de Cerrar Sesión
         binding.btnCerrarSesion.setOnClickListener {
+            // Cerrar sesión en Google si correspondía
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+            val googleSignInClient = GoogleSignIn.getClient(this, gso)
+            googleSignInClient.signOut()
+
             finish()
         }
     }

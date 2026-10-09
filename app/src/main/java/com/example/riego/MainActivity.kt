@@ -6,15 +6,40 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.riego.databinding.ActivityMainBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 
 class MainActivity : AppCompatActivity() {
 
     // ViewBinding para acceso seguro y tipado a las vistas del layout
     private lateinit var binding: ActivityMainBinding
+
+    // Cliente y selector de Google Sign-In
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    // Launcher para capturar el resultado del flujo de autenticación de Google
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
+            val email = account.email ?: account.displayName ?: "Usuario Google"
+            Toast.makeText(this, getString(R.string.login_google_success), Toast.LENGTH_SHORT).show()
+            navegarBienvenida(email)
+        } catch (e: ApiException) {
+            manejarErrorGoogle(e)
+        }
+    }
 
     // Contador de intentos fallidos de inicio de sesión
     private var intentosFallidos: Int = 0
@@ -42,6 +67,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // Configuración de Google Sign-In
+        configurarGoogleSignIn()
+
         // Cargar usuario guardado si la opción 'Recordarme' estaba activa previamente
         cargarPreferenciasUsuario()
 
@@ -53,6 +81,69 @@ class MainActivity : AppCompatActivity() {
         binding.btnLimpiar.setOnClickListener {
             limpiarCampos()
         }
+
+        binding.btnGoogleSignIn.setOnClickListener {
+            iniciarSesionGoogle()
+        }
+    }
+
+    /**
+     * Inicializa las opciones de Google Sign-In
+     */
+    private fun configurarGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+    }
+
+    /**
+     * Lanza el selector de cuentas de Google
+     */
+    private fun iniciarSesionGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher.launch(signInIntent)
+    }
+
+    /**
+     * Gestiona excepciones de Google Sign-In (por ejemplo, si falta SHA-1 o configuración en Google Console)
+     */
+    private fun manejarErrorGoogle(e: ApiException) {
+        val codigo = e.statusCode
+        val mensaje = e.localizedMessage ?: "Error desconocido"
+
+        // Códigos típicos cuando falta registrar la app o huella SHA-1 en Google Cloud Console (10: DEVELOPER_ERROR, 12500)
+        if (codigo == 10 || codigo == 12500) {
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.login_google_dialog_title))
+                .setMessage(getString(R.string.login_google_dialog_message, codigo))
+                .setPositiveButton(getString(R.string.btn_dialog_test)) { _, _ ->
+                    val emailPrueba = getString(R.string.login_google_dialog_simulated_user)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.login_google_simulated, emailPrueba),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    navegarBienvenida(emailPrueba)
+                }
+                .setNegativeButton(getString(R.string.btn_dialog_cancel), null)
+                .show()
+        } else {
+            Toast.makeText(
+                this,
+                getString(R.string.login_google_error, codigo, mensaje),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    /**
+     * Navega hacia BienvenidaActivity pasando el identificador de usuario
+     */
+    private fun navegarBienvenida(usuario: String) {
+        val intent = Intent(this, BienvenidaActivity::class.java)
+        intent.putExtra("usuario", usuario)
+        startActivity(intent)
     }
 
     /**
