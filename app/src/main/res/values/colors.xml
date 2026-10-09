@@ -2,4 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Paleta de Riego / Naturaleza -->
+    <color name="green_primary">#2E7D32</color>
+    <color name="green_primary_dark">#1B5E20</color>
+    <color name="green_accent">#4CAF50</color>
+    <color name="green_light">#E8F5E9</color>
+    
+    <!-- Estados de humedad y riego -->
+    <color name="water_blue">#0288D1</color>
+    <color name="water_blue_light">#E1F5FE</color>
+    <color name="status_dry">#D32F2F</color>
+    <color name="status_optimal">#2E7D32</color>
+    <color name="status_wet">#1976D2</color>
+    
+    <!-- Colores neutros -->
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_medium">#9E9E9E</color>
+    <color name="gray_dark">#424242</color>
 </resources>

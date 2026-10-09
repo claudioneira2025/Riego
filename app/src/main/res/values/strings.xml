@@ -2,11 +2,65 @@
     <!-- Nombre de la aplicación -->
     <string name="app_name">Riego</string>
 
-    <!-- Arreglo de opciones de idiomas para la selección en la app -->
+    <!-- Idiomas -->
     <string-array name="idiomas">
-        <!-- Primer idioma disponible: Español -->
         <item>Español</item>
-        <!-- Segundo idioma disponible: Inglés -->
         <item>Inglés</item>
     </string-array>
+
+    <!-- Pantalla de Inicio de Sesión (MainActivity) -->
+    <string name="login_title">Iniciar sesión</string>
+    <string name="login_user_hint">Correo electrónico</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_remember_me">Recordarme</string>
+    <string name="login_button_enter">Ingresar</string>
+    <string name="login_button_clear">Limpiar</string>
+    <string name="login_error_empty_user">Ingresa tu correo</string>
+    <string name="login_error_invalid_email">Ingresa un email válido</string>
+    <string name="login_error_empty_password">Ingresa tu contraseña</string>
+    <string name="login_error_short_password">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="login_error_attempt_warning">Intento fallido %1$d de %2$d</string>
+    <string name="login_error_locked">Acceso bloqueado temporalmente por demasiados intentos fallidos.</string>
+    <string name="content_desc_logo">Logo de la aplicación Riego</string>
+
+    <!-- Pantalla Principal de Control de Riego (BienvenidaActivity) -->
+    <string name="welcome_user">Bienvenido, %1$s</string>
+    <string name="irrigation_control_title">Panel de Control de Riego</string>
+    
+    <!-- Sensor de Humedad -->
+    <string name="humidity_card_title">Humedad del Suelo</string>
+    <string name="humidity_current_label">Nivel actual:</string>
+    <string name="humidity_percent_format">%1$d%%</string>
+    <string name="humidity_status_dry">Suelo Seco - ¡Riego recomendado!</string>
+    <string name="humidity_status_optimal">Humedad Óptima</string>
+    <string name="humidity_status_wet">Suelo Muy Húmedo / Saturado</string>
+    <string name="btn_check_humidity">Consultar Humedad</string>
+    <string name="msg_humidity_updated">Lectura de humedad actualizada: %1$d%%</string>
+
+    <!-- Control de Riego -->
+    <string name="irrigation_card_title">Estado del Sistema</string>
+    <string name="irrigation_system_state_label">Estado:</string>
+    <string name="irrigation_state_idle">Inactivo (Válvula cerrada)</string>
+    <string name="irrigation_state_running">Regando actualmente (Válvula abierta)</string>
+    <string name="switch_auto_irrigation">Riego Automático</string>
+    <string name="switch_auto_irrigation_desc">Activa el riego de forma autónoma si la humedad es menor a 30%</string>
+    <string name="btn_start_manual_irrigation">Iniciar Riego Manual</string>
+    <string name="btn_stop_irrigation">Detener Riego</string>
+    <string name="msg_auto_irrigation_activated">Riego automático activado: suelo seco (%1$d%%)</string>
+    <string name="msg_manual_irrigation_started">Riego manual iniciado.</string>
+    <string name="msg_irrigation_stopped">Riego detenido.</string>
+    <string name="msg_auto_irrigation_enabled">Modo automático activado.</string>
+    <string name="msg_auto_irrigation_disabled">Modo automático desactivado.</string>
+
+    <!-- Navegación y Acciones -->
+    <string name="btn_preferences">Preferencias</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+
+    <!-- Pantalla de Preferencias (PreferenciasActivity) -->
+    <string name="preferences_title">Preferencias</string>
+    <string name="pref_notifications_label">Recibir notificaciones</string>
+    <string name="pref_notifications_desc">Alertas sobre niveles bajos de humedad y riego</string>
+    <string name="pref_language_label">Idioma de la aplicación</string>
+    <string name="btn_save_preferences">Guardar Preferencias</string>
+    <string name="pref_saved_message">Preferencias guardadas exitosamente</string>
 </resources>
