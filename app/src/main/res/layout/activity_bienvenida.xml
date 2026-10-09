@@ -1,34 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_light"
+    android:fillViewport="true"
     tools:context=".BienvenidaActivity">
 
-    <TextView
-        android:id="@+id/txtBienvenida"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bienvenido"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnPreferencias"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        android:padding="20dp">
 
-    <Button
-        android:id="@+id/btnPreferencias"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:onClick="onPreferenciasClick"
-        android:text="Preferencias"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtBienvenida" />
+        <!-- Encabezado de Bienvenida -->
+        <TextView
+            android:id="@+id/txtBienvenida"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/welcome_user"
+            android:textColor="@color/green_primary_dark"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btnCerrarSesion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/txtSubtitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/irrigation_control_title"
+            android:textColor="@color/gray_dark"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/btnCerrarSesion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtBienvenida" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCerrarSesion"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_logout"
+            android:textColor="@color/status_dry"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="@+id/txtSubtitulo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/txtBienvenida" />
+
+        <!-- Tarjeta 1: Sensor de Humedad -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardHumedad"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtSubtitulo">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/humidity_card_title"
+                    android:textColor="@color/green_primary_dark"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/humidity_current_label"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/txtHumedadValor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="45%"
+                        android:textColor="@color/water_blue"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressHumedad"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="14dp"
+                    android:layout_marginTop="12dp"
+                    android:max="100"
+                    android:progress="45"
+                    android:progressTint="@color/water_blue" />
+
+                <TextView
+                    android:id="@+id/txtHumedadEstado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/humidity_status_optimal"
+                    android:textColor="@color/status_optimal"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnConsultarHumedad"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/btn_check_humidity"
+                    android:textColor="@color/green_primary"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/green_primary" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Tarjeta 2: Control del Riego -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardRiego"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardHumedad">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/irrigation_card_title"
+                    android:textColor="@color/green_primary_dark"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/irrigation_system_state_label"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/txtEstadoRiego"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/irrigation_state_idle"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/gray_light" />
+
+                <!-- Interruptor de Riego Automático -->
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swRiegoAutomatico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/switch_auto_irrigation"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/switch_auto_irrigation_desc"
+                    android:textColor="@color/gray_medium"
+                    android:textSize="12sp" />
+
+                <!-- Botón de Riego Manual -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnControlRiego"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="18dp"
+                    android:backgroundTint="@color/green_primary"
+                    android:text="@string/btn_start_manual_irrigation"
+                    app:cornerRadius="8dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón a Preferencias -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPreferencias"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/green_light"
+            android:text="@string/btn_preferences"
+            android:textColor="@color/green_primary_dark"
+            android:textSize="15sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardRiego" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

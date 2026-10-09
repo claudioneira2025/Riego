@@ -1,142 +1,156 @@
 package com.example.riego
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.util.Patterns
-import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.riego.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    // Variable a nivel de clase para registrar el estado de visualización de la contraseña (inicialmente oculta)
-    private var mostrandoPassword: Boolean = false
-    // Variable a nivel de clase para contabilizar los intentos fallidos de inicio de sesión iniciada en 0
+
+    // ViewBinding para acceso seguro y tipado a las vistas del layout
+    private lateinit var binding: ActivityMainBinding
+
+    // Contador de intentos fallidos de inicio de sesión
     private var intentosFallidos: Int = 0
+    private val maxIntentos: Int = 3
+
+    companion object {
+        // Constantes para persistencia con SharedPreferences
+        private const val PREFS_NAME = "RiegoPrefs"
+        private const val KEY_RECORDAR = "recordar_usuario"
+        private const val KEY_USUARIO = "usuario_guardado"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+
+        // Inflado de la vista utilizando ViewBinding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Ajuste de márgenes para respetar las barras del sistema (Edge to Edge)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val btnIngresar = findViewById<Button>(R.id.btnIngresar)
-        btnIngresar.setOnClickListener {
-            onIngresarClick(it)
+        // Cargar usuario guardado si la opción 'Recordarme' estaba activa previamente
+        cargarPreferenciasUsuario()
+
+        // Configuración de listeners de clics
+        binding.btnIngresar.setOnClickListener {
+            procesarIngreso()
+        }
+
+        binding.btnLimpiar.setOnClickListener {
+            limpiarCampos()
         }
     }
 
-    // Método que procesa la validación e inicio de sesión al hacer clic en Ingresar
-    fun onIngresarClick(view: View) {
-        // Obtiene la vista del campo usuario a través de su identificador en el layout
-        val edtUsuario = findViewById<EditText>(R.id.edtUsuario)
-        // Obtiene la vista del campo contraseña a través de su identificador en el layout
-        val edtPassword = findViewById<EditText>(R.id.edtPassword)
-        // Obtiene la vista del checkbox recordarme a través de su identificador en el layout
-        val chkRecordarme = findViewById<CheckBox>(R.id.chkRecordarme)
+    /**
+     * Carga las credenciales guardadas en SharedPreferences si 'Recordarme' estaba activo
+     */
+    private fun cargarPreferenciasUsuario() {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val recordar = prefs.getBoolean(KEY_RECORDAR, false)
+        if (recordar) {
+            val usuarioGuardado = prefs.getString(KEY_USUARIO, "") ?: ""
+            binding.edtUsuario.setText(usuarioGuardado)
+            binding.chkRecordarme.isChecked = true
+        }
+    }
 
-        // Obtiene el texto escrito en el campo usuario sin espacios al inicio ni al final
-        val usuario = edtUsuario.text.toString().trim()
-        // Obtiene el texto escrito en el campo contraseña sin espacios al inicio ni al final
-        val password = edtPassword.text.toString().trim()
-        // Obtiene el estado booleano de la casilla recordarme
-        val recordarme = chkRecordarme.isChecked
+    /**
+     * Valida los campos del formulario y procesa el inicio de sesión
+     */
+    private fun procesarIngreso() {
+        // Verificar si el usuario ha sido bloqueado por superar los intentos permitidos
+        if (intentosFallidos >= maxIntentos) {
+            Toast.makeText(this, getString(R.string.login_error_locked), Toast.LENGTH_LONG).show()
+            return
+        }
 
-        // Variable de bandera booleana para comprobar si todas las validaciones son exitosas
+        val usuario = binding.edtUsuario.text.toString().trim()
+        val password = binding.edtPassword.text.toString().trim()
+        val recordarme = binding.chkRecordarme.isChecked
+
         var esValido = true
 
-        // Valida si el campo usuario se encuentra vacío
+        // Validación del campo de usuario / correo
         if (usuario.isEmpty()) {
-            // Muestra mensaje de error directo en el campo de usuario indicando que es obligatorio
-            edtUsuario.error = "Ingresa tu correo"
-            // Cambia el estado de validación a falso
+            binding.tilUsuario.error = getString(R.string.login_error_empty_user)
             esValido = false
-        // Valida si el texto ingresado no tiene un formato de correo electrónico válido
         } else if (!Patterns.EMAIL_ADDRESS.matcher(usuario).matches()) {
-            // Muestra mensaje de error directo en el campo de usuario por formato de email inválido
-            edtUsuario.error = "Ingresa un email válido"
-            // Cambia el estado de validación a falso
+            binding.tilUsuario.error = getString(R.string.login_error_invalid_email)
             esValido = false
-        }
-
-        // Valida si el campo contraseña se encuentra vacío
-        if (password.isEmpty()) {
-            // Muestra mensaje de error directo en el campo de contraseña indicando que es obligatoria
-            edtPassword.error = "Ingresa tu contraseña"
-            // Cambia el estado de validación a falso
-            esValido = false
-        // Valida si la contraseña tiene menos de 6 caracteres
-        } else if (password.length < 6) {
-            // Muestra mensaje de error directo indicando el requisito de longitud mínima
-            edtPassword.error = "La contraseña debe tener al menos 6 caracteres"
-            // Cambia el estado de validación a falso
-            esValido = false
-        }
-
-        // Evalúa si falló alguna de las validaciones de los campos
-        if (!esValido) {
-            // Incrementa en 1 el contador de intentos fallidos
-            intentosFallidos++
         } else {
-            // Instancia un Intent para abrir la actividad BienvenidaActivity
+            binding.tilUsuario.error = null
+        }
+
+        // Validación del campo de contraseña
+        if (password.isEmpty()) {
+            binding.tilPassword.error = getString(R.string.login_error_empty_password)
+            esValido = false
+        } else if (password.length < 6) {
+            binding.tilPassword.error = getString(R.string.login_error_short_password)
+            esValido = false
+        } else {
+            binding.tilPassword.error = null
+        }
+
+        if (!esValido) {
+            intentosFallidos++
+            val restantes = maxIntentos - intentosFallidos
+            if (intentosFallidos >= maxIntentos) {
+                Toast.makeText(this, getString(R.string.login_error_locked), Toast.LENGTH_LONG).show()
+                binding.btnIngresar.isEnabled = false
+            } else {
+                Toast.makeText(
+                    this,
+                    getString(R.string.login_error_attempt_warning, intentosFallidos, maxIntentos),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            // Reiniciar contador de intentos fallidos
+            intentosFallidos = 0
+
+            // Guardar o eliminar el usuario de SharedPreferences según el checkbox
+            val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit().apply {
+                putBoolean(KEY_RECORDAR, recordarme)
+                if (recordarme) {
+                    putString(KEY_USUARIO, usuario)
+                } else {
+                    remove(KEY_USUARIO)
+                }
+                apply()
+            }
+
+            // Iniciar BienvenidaActivity pasando el usuario como extra
             val intent = Intent(this, BienvenidaActivity::class.java)
-            // Adjunta el nombre del usuario al Intent con la clave "usuario"
             intent.putExtra("usuario", usuario)
-            // Lanza la nueva actividad de bienvenida
             startActivity(intent)
         }
     }
 
-    // Método invocado automáticamente al presionar el botón Limpiar mediante android:onClick
-    fun onLimpiarClick(view: View) {
-        // Obtiene la vista del campo de usuario a través de su identificador en el layout
-        val edtUsuario = findViewById<EditText>(R.id.edtUsuario)
-        // Obtiene la vista del campo de contraseña a través de su identificador en el layout
-        val edtPassword = findViewById<EditText>(R.id.edtPassword)
-        // Obtiene la vista del checkbox de recordarme a través de su identificador en el layout
-        val chkRecordarme = findViewById<CheckBox>(R.id.chkRecordarme)
-
-        // Vacía el contenido de texto del campo usuario
-        edtUsuario.setText("")
-        // Elimina cualquier mensaje de error visual en el campo usuario
-        edtUsuario.error = null
-        // Vacía el contenido de texto del campo contraseña
-        edtPassword.setText("")
-        // Elimina cualquier mensaje de error visual en el campo contraseña
-        edtPassword.error = null
-        // Desmarca la casilla de verificación estableciendo su estado en falso
-        chkRecordarme.isChecked = false
-    }
-
-    // Método invocado al presionar el ImageButton para alternar la visibilidad de la contraseña
-    fun onMostrarPasswordClick(view: View) {
-        // Obtiene la referencia al campo de texto de la contraseña
-        val edtPassword = findViewById<EditText>(R.id.edtPassword)
-
-        // Verifica si la contraseña actualmente está oculta (mostrandoPassword es false)
-        if (!mostrandoPassword) {
-            // Cambia el inputType para que los caracteres sean visibles
-            edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            // Actualiza la variable de clase a true indicando que ahora es visible
-            mostrandoPassword = true
-        } else {
-            // Cambia el inputType de vuelta a formato de contraseña para ocultar el texto
-            edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            // Actualiza la variable de clase a false indicando que volvió a ocultarse
-            mostrandoPassword = false
-        }
-
-        // Mantiene la posición del cursor de texto al final del contenido
-        edtPassword.setSelection(edtPassword.text.length)
+    /**
+     * Limpia los campos de entrada y restablece los errores y el checkbox
+     */
+    private fun limpiarCampos() {
+        binding.edtUsuario.setText("")
+        binding.tilUsuario.error = null
+        binding.edtPassword.setText("")
+        binding.tilPassword.error = null
+        binding.chkRecordarme.isChecked = false
+        binding.edtUsuario.requestFocus()
     }
 }
