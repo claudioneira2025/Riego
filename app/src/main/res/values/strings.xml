@@ -23,6 +23,18 @@
     <string name="login_error_locked">Acceso bloqueado temporalmente por demasiados intentos fallidos.</string>
     <string name="content_desc_logo">Logo de la aplicación Riego</string>
 
+    <!-- Autenticación con Google -->
+    <string name="login_or_continue_with">O ingresa con</string>
+    <string name="login_google_button">Continuar con Google</string>
+    <string name="login_google_success">Sesión iniciada con Google exitosamente</string>
+    <string name="login_google_error">Error al iniciar sesión con Google (%1$d): %2$s</string>
+    <string name="login_google_dialog_title">Google Sign-In</string>
+    <string name="login_google_dialog_message">No se pudo autenticar con Google Play Services (Código %1$d).\n\nEsto suele suceder si la huella SHA-1 de depuración aún no está configurada en Google Cloud Console.\n\n¿Deseas ingresar en modo de prueba con una cuenta simulada?</string>
+    <string name="login_google_dialog_simulated_user">usuario.google@gmail.com</string>
+    <string name="login_google_simulated">Ingresando en modo de prueba con: %1$s</string>
+    <string name="btn_dialog_test">Usar cuenta de prueba</string>
+    <string name="btn_dialog_cancel">Cancelar</string>
+
     <!-- Pantalla Principal de Control de Riego (BienvenidaActivity) -->
     <string name="welcome_user">Bienvenido, %1$s</string>
     <string name="irrigation_control_title">Panel de Control de Riego</string>
